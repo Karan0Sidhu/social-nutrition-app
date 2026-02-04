@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-socialnutritionapp-dev-196e4-authRole",
+      "UnauthRoleArn": "arn:aws:iam::486553676945:role/amplify-socialnutritionapp-dev-196e4-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::486553676945:role/amplify-socialnutritionapp-dev-196e4-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-socialnutritionapp-dev-196e4-deployment",
+      "UnauthRoleName": "amplify-socialnutritionapp-dev-196e4-unauthRole",
+      "StackName": "amplify-socialnutritionapp-dev-196e4",
+      "StackId": "arn:aws:cloudformation:us-east-2:486553676945:stack/amplify-socialnutritionapp-dev-196e4/e2ae5be0-01fc-11f1-8452-06e91580c16b",
+      "AmplifyAppId": "d3q5so3sho40ss"
+    },
+    "categories": {
+      "function": {
+        "FoodSearchFunction": {
+          "deploymentBucketName": "amplify-socialnutritionapp-dev-196e4-deployment",
+          "s3Key": "amplify-builds/FoodSearchFunction-394d4b6d526637393952-build.zip"
+        }
+      }
+    }
+  }
+}

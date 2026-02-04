@@ -1,0 +1,27 @@
+{
+  "function": {
+    "FoodSearchFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_FoodSearchFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "FoodSearchFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_FoodSearchFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "FoodSearchFunction"
+        }
+      ]
+    }
+  }
+}
