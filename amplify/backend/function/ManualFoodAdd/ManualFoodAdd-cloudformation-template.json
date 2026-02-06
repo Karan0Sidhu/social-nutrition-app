@@ -59,12 +59,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "FoodSearchFunction",
+            "ManualFoodAdd",
             {
               "Fn::Join": [
                 "",
                 [
-                  "FoodSearchFunction",
+                  "ManualFoodAdd",
                   "-",
                   {
                     "Ref": "env"
@@ -110,12 +110,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "socialnutritionappLambdaRolebdc1a5bb",
+            "socialnutritionappLambdaRolede9248d3",
             {
               "Fn::Join": [
                 "",
                 [
-                  "socialnutritionappLambdaRolebdc1a5bb",
+                  "socialnutritionappLambdaRolede9248d3",
                   "-",
                   {
                     "Ref": "env"
@@ -204,13 +204,22 @@
             {
               "Effect": "Allow",
               "Action": [
+                "dynamodb:Put*",
+                "dynamodb:Create*",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PartiQLInsert",
                 "dynamodb:Get*",
                 "dynamodb:BatchGetItem",
                 "dynamodb:List*",
                 "dynamodb:Describe*",
                 "dynamodb:Scan",
                 "dynamodb:Query",
-                "dynamodb:PartiQLSelect"
+                "dynamodb:PartiQLSelect",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*",
+                "dynamodb:PartiQLUpdate",
+                "dynamodb:Delete*",
+                "dynamodb:PartiQLDelete"
               ],
               "Resource": [
                 {

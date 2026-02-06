@@ -1,59 +1,78 @@
 import json
 import urllib3
+import boto3
+import os
+from boto3.dynamodb.conditions import Attr
+
+# Initialize DynamoDB
+TABLE_NAME = os.environ.get('STORAGE_FOODTABLE_NAME')
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table(TABLE_NAME)
 
 def handler(event, context):
-    # 1. Extract the food name from the frontend request
-    # Logic: Look for ?name=apple in the URL
-    query_params = event.get('queryStringParameters')
-    food_query = query_params.get('name') if query_params else "apple"
+    q_params = event.get('queryStringParameters') or {}
+    food_query = q_params.get('name') or "" 
+    food_query = food_query.lower().strip()
+    #print(f"DEBUG: Searching for string: '{food_query}'") # Check logs for this!
     
-    print(f"User is searching for: {food_query}")
+    results = []
 
-    # 2. Call the Open Food Facts API (The "External Brain")
-    http = urllib3.PoolManager()
-    # We limit results to 5 to keep it fast
-    url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={food_query}&search_simple=1&action=process&json=1&page_size=5"
-    
-    try:
-        response = http.request('GET', url)
-        data = json.loads(response.data.decode('utf-8'))
+    # 2. SEARCH INTERNAL DYNAMODB
+    if food_query: # Don't scan if query is empty
+        try:
+            # Let's check what the first item in the DB actually looks like
+            #debug_scan = table.scan(Limit=1)
+            #print(f"DEBUG: Sample DB Item: {debug_scan.get('Items')}")
+
+            db_response = table.scan(
+                FilterExpression=Attr('product_name').contains(food_query)
+            )
+            
+            db_items = db_response.get('Items', [])
+            #print(f"DEBUG: Found {len(db_items)} items in DB")
+
+            for item in db_items:
+                item['source_type'] = 'INTERNAL'
+                results.append(item)
+        except Exception as e:
+            print(f"DynamoDB Error: {str(e)}")
+
+        # 2. SEARCH OPEN FOOD FACTS API
+        http = urllib3.PoolManager()
+        # We use a limit of 10 to keep the response snappy
+        off_url = f"https://world.openfoodfacts.org/cgi/search.pl?search_terms={food_query}&search_simple=1&action=process&json=1&page_size=10"
         
-        # 3. Clean the data (Map the messy API response to clean fields)
-        products = data.get('products', [])
-        results = []
-        
-        for p in products:
-            nutrients = p.get('nutriments', {})
-            portion = p.get('serving_size')
+        try:
+            api_res = http.request('GET', off_url)
+            data = json.loads(api_res.data.decode('utf-8'))
+            
+            for p in data.get('products', []):
+                nutrients = p.get('nutriments', {})
+                
+                # Map OFF data to match your internal app structure
+                results.append({
+                    "foodId": p.get('_id'),
+                    "source_type": "EXTERNAL",
+                    "product_name": p.get('product_name', 'Unknown'),
+                    "brand": p.get('brands', 'Generic'),
+                    "image": p.get('image_front_url', ''),
+                    "calories": nutrients.get('energy-kcal_100g', 0),
+                    "macros": {
+                        "protein": nutrients.get('proteins_100g', 0),
+                        "carbs": nutrients.get('carbohydrates_100g', 0),
+                        "fat": nutrients.get('fat_100g', 0),
+                    }
+                })
+        except Exception as e:
+            print(f"OFF API Error: {str(e)}")
 
-            results.append({
-                "id": p.get('_id'),
-                "product_name": p.get('product_name', 'Unknown'),
-                "brand": p.get('brands', 'Generic'),
-                "image": p.get('image_front_url', ''),
-                "portion": portion,
-                "calories": nutrients.get('energy-kcal_100g', 0),
-                "macros": {
-                    "protein": nutrients.get('proteins_100g', 0),
-                    "carbs": nutrients.get('carbohydrates_100g', 0),
-                    "fat": nutrients.get('fat_100g', 0),
-                          }
-                    })
-
-        # 4. Return to the React Frontend
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*', # Crucial for browser security
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Methods': 'GET,OPTIONS'
-            },
-            'body': json.dumps(results)
-        }
-
-    except Exception as e:
-        print(f"Error occurred: {str(e)}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'message': 'Failed to fetch food data'})
-        }
+    # 3. RETURN COMBINED LIST
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS'
+        },
+        'body': json.dumps(results, default=str)
+    }

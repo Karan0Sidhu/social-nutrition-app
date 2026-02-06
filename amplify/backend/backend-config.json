@@ -2,6 +2,33 @@
   "function": {
     "FoodSearchFunction": {
       "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "ManualFoodAdd": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
@@ -22,6 +49,78 @@
           "resourceName": "FoodSearchFunction"
         }
       ]
+    },
+    "AMPLIFY_function_ManualFoodAdd_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ManualFoodAdd"
+        }
+      ]
+    },
+    "AMPLIFY_function_ManualFoodAdd_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ManualFoodAdd"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_arn": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_partitionKeyName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_partitionKeyType": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_streamArn": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_FoodTable_tableName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "FoodTable"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "FoodTable": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "serviceType": "imported"
     }
   }
 }

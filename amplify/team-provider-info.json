@@ -15,7 +15,21 @@
       "function": {
         "FoodSearchFunction": {
           "deploymentBucketName": "amplify-socialnutritionapp-dev-196e4-deployment",
-          "s3Key": "amplify-builds/FoodSearchFunction-394d4b6d526637393952-build.zip"
+          "s3Key": "amplify-builds/FoodSearchFunction-36435a5470676e456a6d-build.zip"
+        },
+        "ManualFoodAdd": {
+          "deploymentBucketName": "amplify-socialnutritionapp-dev-196e4-deployment",
+          "s3Key": "amplify-builds/ManualFoodAdd-69314e693445652b7054-build.zip"
+        }
+      },
+      "storage": {
+        "FoodTable": {
+          "tableName": "FoodTable",
+          "region": "us-east-2",
+          "arn": "arn:aws:dynamodb:us-east-2:486553676945:table/FoodTable",
+          "streamArn": "arn:aws:dynamodb:us-east-2:486553676945:table/FoodTable/stream/2026-02-05T21:12:47.700",
+          "partitionKeyName": "foodId",
+          "partitionKeyType": "S"
         }
       }
     }
